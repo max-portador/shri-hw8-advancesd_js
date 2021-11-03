@@ -42,16 +42,24 @@ class MySet {
         }
     }
 
-    entries(){
-        return Object.entries(this._values).map( pair => [Number(pair[0]), pair[1]])
+    *entries(){
+        for (let key in this._values){
+           let val = this._values[key]
+            yield [val, val]
+        }
     }
 
-    keys(){
-        return Object.keys(this._values).map( key => Number(key))
+    *keys(){
+        for (let key in this._values){
+            yield key
+        }
     }
 
-    values(){
-        return Object.values(this._values)
+    *values(){
+        for (let key in this._values){
+            let val = this._values[key]
+            yield val
+        }
     }
 
     get size() {
