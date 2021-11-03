@@ -1,6 +1,4 @@
-const util = require('util')
-
-module.exports = class MySet {
+class MySet {
     constructor(values, hasFunction = JSON.stringify) {
         this._hashFunction = hasFunction
         this._values = {};
@@ -27,9 +25,8 @@ module.exports = class MySet {
         return this
     }
 
-    //чтобы console.log(mySet) возвращал массив
-    [util.inspect.custom]() {
-        return Object.values(this._values)
+    get [Symbol.toStringTag]() {
+        return "^_^"
     }
 
     // делаем объект итерируемым
@@ -57,7 +54,7 @@ module.exports = class MySet {
         return Object.values(this._values)
     }
 
-    size() {
+    get size() {
         return this._size;
     }
 
@@ -96,6 +93,7 @@ module.exports = class MySet {
             k++;
         }
     };
-
 }
+
+module.exports = MySet
 
