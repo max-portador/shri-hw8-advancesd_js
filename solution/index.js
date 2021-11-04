@@ -19,6 +19,12 @@ class MySet {
 
     add (value) {
         if (!this.has(value)) {
+            if (typeof value === 'object') {
+                let valueKeys = Object.keys(value)
+                if (valueKeys.length === 0){
+                    return
+                }
+            }
             this._values[this._hashFunction(value)] = value;
             this._size++;
         }
@@ -27,7 +33,7 @@ class MySet {
 
     get [Symbol.toStringTag]() {
         return "^_^"
-    }
+    };
 
     // делаем объект итерируемым
     [Symbol.iterator](){
@@ -40,25 +46,21 @@ class MySet {
                 done: !(i in data)
             })
         }
-    }
+    };
+
+
+    *values(){
+        for (let k in this._values){
+            yield this._values[k]
+        }
+    };
+
+    keys = this.values;
 
     *entries(){
         for (let key in this._values){
            let val = this._values[key]
             yield [val, val]
-        }
-    }
-
-    *keys(){
-        for (let key in this._values){
-            yield key
-        }
-    }
-
-    *values(){
-        for (let key in this._values){
-            let val = this._values[key]
-            yield val
         }
     }
 
@@ -69,14 +71,14 @@ class MySet {
     clear(){
         this._values = {}
         this._size = 0
-    }
+    };
 
     delete(value) {
         if (this.has(value)) {
             delete this._values[this._hashFunction(value)];
             this._size--;
         }
-    }
+    };
 
     forEach(callback, thisArg) {
         if (this == null) { throw new TypeError('MySet.prototype.forEach called on null or undefined'); }
