@@ -6,20 +6,25 @@ class MySet {
         this._hashFunction = hasFunction
         this._values = {};
         this._size = 0;
-        if (values.length) {
+        if (values && values.length) {
             Array.from(values).forEach( val => this.add(val))
         }
     }
 
 
     has (value) {
-        if (typeof value === 'object'
-            && Object.keys(value).length === 0) {
-            return false
+        if (typeof value === 'object'){
+
+            const key = Object.keys(value)[0]
+
+            if (typeof value[key] === 'function') {
+                return typeof this._values[key] !== "undefined"
+            } else {
+                return typeof this._values[this._hashFunction(value)] !== "undefined";
+            }
         }
         return typeof this._values[this._hashFunction(value)] !== "undefined";
     }
-
 
     add (value) {
         if (!this.has(value)) {
@@ -33,11 +38,9 @@ class MySet {
                 }
 
             } else {
-
             this._values[this._hashFunction(value)] = value;
 
             }
-
             this._size++;
         }
         return this
@@ -86,6 +89,10 @@ class MySet {
     };
 
     delete(value) {
+        if (typeof value === 'object' && Object.keys(value).length === 0){
+            return
+        }
+
         if (this.has(value)) {
             delete this._values[this._hashFunction(value)];
             this._size--;
