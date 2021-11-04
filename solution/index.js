@@ -13,37 +13,93 @@ class MySet {
 
 
     has (value) {
-        if (typeof value === 'object'){
+        switch (typeof value){
+            case "function": {
+                return this.hasFunction(value)
+            }
+            case "object": {
+                return this.hasObject(value)
+            }
 
-            const key = Object.keys(value)[0]
-
-            if (typeof value[key] === 'function') {
-                return typeof this._values[key] !== "undefined"
-            } else {
-                return typeof this._values[this._hashFunction(value)] !== "undefined";
+            default: {
+                return this.hasPrimitve(value)
             }
         }
+    }
+
+    hasFunction(value){
+        const funcName = value.name || "(anonymous)"
+
+        if (funcName === "(anonymous)"){
+            return false
+        }
+        return typeof this._values[this._hashFunction(funcName)] !== "undefined"
+    }
+
+    hasFunctionInObj(key) {
+        return typeof this._values[key] !== "undefined"
+    }
+
+    hasObject(value) {
+        const key = Object.keys(value)[0]
+
+        if (typeof value[key] === 'function') {
+            return this.hasFunctionInObj(key)
+        } else {
+            return typeof this._values[this._hashFunction(value)] !== "undefined";
+        }
+    }
+
+    hasPrimitve(value) {
         return typeof this._values[this._hashFunction(value)] !== "undefined";
     }
 
     add (value) {
         if (!this.has(value)) {
-            if (typeof value === 'object') {
-
-                const key = Object.keys(value)[0]
-                if (typeof value[key] === 'function') {
-                this._values[key] = value
-                } else {
-                    this._values[this._hashFunction(value)] = value;
+            switch (typeof value){
+                case "function":{
+                    this.addFunction(value)
+                    break
                 }
-
-            } else {
-            this._values[this._hashFunction(value)] = value;
-
+                case "object":{
+                    this.addObject(value)
+                    break
+                }
+                default: {
+                this.addPrimitive(value)
+                    break
+                }
             }
             this._size++;
         }
         return this
+    }
+
+    addFunction(value){
+        const funcName = value.name || "(anonymous)"
+
+        if (funcName === "(anonymous)"){
+            this._values[Date.now().toString()] = value
+        } else {
+            this._values[this._hashFunction(funcName)] = value
+        }
+    }
+
+    addObject(value){
+        const key = Object.keys(value)[0]
+        if (typeof value[key] === 'function') {
+            this.addFunctionInObj(key, value)
+        } else {
+            this._values[this._hashFunction(value)] = value;
+        }
+    }
+
+    addFunctionInObj(key, value){
+        this._values[key] = value
+    }
+
+    addPrimitive(value) {
+        this._values[this._hashFunction(value)] = value;
     }
 
     get [Symbol.toStringTag]() {
