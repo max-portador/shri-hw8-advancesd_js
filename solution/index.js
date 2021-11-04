@@ -1,3 +1,6 @@
+
+
+
 class MySet {
     constructor(values, hasFunction = JSON.stringify) {
         this._hashFunction = hasFunction
@@ -7,6 +10,7 @@ class MySet {
             Array.from(values).forEach( val => this.add(val))
         }
     }
+
 
     has (value) {
         if (typeof value === 'object'
@@ -20,12 +24,20 @@ class MySet {
     add (value) {
         if (!this.has(value)) {
             if (typeof value === 'object') {
-                let valueKeys = Object.keys(value)
-                if (valueKeys.length === 0){
-                    return
+
+                const key = Object.keys(value)[0]
+                if (typeof value[key] === 'function') {
+                this._values[key] = value
+                } else {
+                    this._values[this._hashFunction(value)] = value;
                 }
-            }
+
+            } else {
+
             this._values[this._hashFunction(value)] = value;
+
+            }
+
             this._size++;
         }
         return this
